@@ -13,11 +13,16 @@ const (
 
 func main() {
   fmt.Println("blackjack")
-  card1 := card{
-    face: 2,
-    suit:  suitClub,
-  }
-  fmt.Println(card1)
+  // panic("wait this isn't ready to run yet!")
+  // card1 := card{
+  //   face: 2,
+  //   suit:  suitClub,
+  // }
+  // fmt.Println(card1)
+
+  deck := generateDeck()
+  fmt.Println(deck)
+  fmt.Println(len(deck))
 }
 
 type card struct {
@@ -25,14 +30,31 @@ type card struct {
   suit int // clubs, diamonds, hearts, and spades: 1-4
 }
 
+func generateDeck() []card   {
+  deck := make([]card, 0, 52)
+  for suit := 1; suit <=4; suit++ {
+    for num:=1; num<=13; num++{
+      aCard := card{
+        face: num,
+        suit: suit,
+      }
+      deck=append(deck, aCard)
+    }
+  }
+  return deck
+}
+
 func (c card) String() string {
-  suitName := "clubs" // 1
-  if c.suit == 2 {
-    suitName = "diamonds" // 2
-  } else if c.suit == 3 {
-    suitName = "hearts" // 3
-  } else {
-    suitName = "spades" // 4
+  suitName := "unknown"
+  switch c.suit {
+  case 1:
+    suitName = "clubs"
+  case 2:
+    suitName = "diamonds"
+  case 3:
+    suitName = "hearts"
+  case 4:
+    suitName = "spades"
   }
 
   faceName := fmt.Sprintf("%d", c.face)
