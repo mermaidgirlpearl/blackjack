@@ -23,16 +23,17 @@ type game struct {
 
 	cardSprites []*cardSprite
 
-	deck []card
+	deck *cardPile
 }
 
-func NewGame(screenWidth, screenHeight int, cardImages *cardImages) *game {
+func NewGame(screenWidth, screenHeight int, cardImages *cardImages, deck *cardPile) *game {
 	rand.Seed(time.Now().UnixNano())
 
 	return &game{
 		screenWidth:  screenWidth,
 		screenHeight: screenHeight,
 		cardImages:   cardImages,
+		deck:         deck,
 	}
 }
 
@@ -44,8 +45,7 @@ func (g *game) Update() error {
 		// faceValue := rand.Intn(13) + 2 // 2-14, 2 through King and Ace
 		// suit := rand.Intn(4) + 1       // 1-4
 
-		drawCard := g.deck[0]
-		g.deck = g.deck[1:]
+		drawCard := g.deck.draw()
 		faceValue := drawCard.face
 		suit := drawCard.suit
 		fmt.Println("drew card ", drawCard)

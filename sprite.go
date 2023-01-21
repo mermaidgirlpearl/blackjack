@@ -6,16 +6,10 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-// type card struct {
-// 	face int
-// 	suit int
-// }
-
 type cardSprite struct {
 	image *ebiten.Image
-	// location:
-	x int
-	y int
+	x     int
+	y     int
 }
 
 func (s *cardSprite) in(x, y int) bool {

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"image/png"
 	"log"
+	"math/rand"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -16,6 +18,10 @@ const (
 	suitSpade  = 4
 )
 
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+
 func main() {
 	fmt.Println("blackjack")
 	// panic("wait this isn't ready to run yet!")
@@ -26,8 +32,9 @@ func main() {
 	// fmt.Println(card1)
 
 	deck := generateDeck()
-	fmt.Println(deck)
-	fmt.Println(len(deck))
+	deck.shuffle()
+	fmt.Println(deck.cards)
+	fmt.Println(len(deck.cards))
 
 	ebiten.SetFullscreen(true)
 	ebiten.SetWindowTitle("blackjack")
@@ -42,8 +49,7 @@ func main() {
 
 	screenWidth := 320
 	screenHeight := 240
-	theGame := NewGame(screenWidth, screenHeight, cardImages)
-	theGame.deck = deck
+	theGame := NewGame(screenWidth, screenHeight, cardImages, deck)
 	ebiten.RunGame(theGame)
 
 }
@@ -53,7 +59,7 @@ type card struct {
 	suit int // clubs, diamonds, hearts, and spades: 1-4
 }
 
-func generateDeck() []card {
+func generateDeck() *cardPile {
 	deck := make([]card, 0, 52)
 	for suit := 1; suit <= 4; suit++ {
 		for num := 1; num <= 13; num++ {
@@ -64,7 +70,9 @@ func generateDeck() []card {
 			deck = append(deck, aCard)
 		}
 	}
-	return deck
+	return &cardPile{
+		cards: deck,
+	}
 }
 
 func (c card) String() string {
@@ -94,6 +102,16 @@ func (c card) String() string {
 	return fmt.Sprintf("%s of %s", faceName, suitName)
 }
 
-type cardpile struct {
+type cardPile struct {
 	cards []card
+}
+
+func (c *cardPile) shuffle() {
+	rand.Shuffle(len(c.cards), func(i, j int) { c.cards[i], c.cards[j] = c.cards[j], c.cards[i] })
+}
+
+func (c *cardPile) draw() card {
+	drawCard := c.cards[0]
+	c.cards = c.cards[1:]
+	return drawCard
 }
