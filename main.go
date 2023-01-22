@@ -106,6 +106,12 @@ type cardPile struct {
 	cards []card
 }
 
+func newCardPile() *cardPile {
+	return &cardPile{
+		cards: make([]card, 0),
+	}
+}
+
 func (c *cardPile) shuffle() {
 	rand.Shuffle(len(c.cards), func(i, j int) { c.cards[i], c.cards[j] = c.cards[j], c.cards[i] })
 }
@@ -114,4 +120,28 @@ func (c *cardPile) draw() card {
 	drawCard := c.cards[0]
 	c.cards = c.cards[1:]
 	return drawCard
+}
+
+func (c *cardPile) add(addCard card) {
+	c.cards = append(c.cards, addCard)
+}
+
+// sum returns the sum of all the cards. if there is an Ace then the best sum will be returned
+func (c *cardPile) sum() int {
+	sum := 0
+	aceCount := 0
+	for _, theCard := range c.cards {
+		sum += theCard.face
+		if theCard.face == 1 {
+			aceCount++
+		}
+	}
+
+	for i := 0; i < aceCount; i++ {
+		if sum <= 11 {
+			sum += 10
+		}
+	}
+
+	return sum
 }
