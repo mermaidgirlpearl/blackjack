@@ -154,7 +154,9 @@ func (g *game) Draw(screen *ebiten.Image) {
 		ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Dealer: %d\nPlayer: %d You %s! press 'N' for a new deal", dealerSum, playerSum, winState), 0, debugY)
 	} else {
 		if g.hold {
-			winState = "won"
+			if dealerSum > 21 || playerSum > dealerSum {
+				winState = "won"
+			}
 			ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Dealer: %d\nPlayer: %d You %s! press 'N' for a new deal", dealerSum, playerSum, winState), 0, debugY)
 		} else {
 			ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Dealer: %d\nPlayer: %d press 'D' to Draw, 'H' to Hold", dealerSum, playerSum), 0, debugY)

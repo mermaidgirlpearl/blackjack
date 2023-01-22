@@ -24,13 +24,6 @@ func init() {
 
 func main() {
 	fmt.Println("blackjack")
-	// panic("wait this isn't ready to run yet!")
-	// card1 := card{
-	//   face: 2,
-	//   suit:  suitClub,
-	// }
-	// fmt.Println(card1)
-
 	deck := generateDeck()
 	deck.shuffle()
 	fmt.Println(deck.cards)
@@ -131,7 +124,11 @@ func (c *cardPile) sum() int {
 	sum := 0
 	aceCount := 0
 	for _, theCard := range c.cards {
-		sum += theCard.face
+		face := theCard.face
+		if face > 10 {
+			face = 10
+		}
+		sum += face
 		if theCard.face == 1 {
 			aceCount++
 		}
