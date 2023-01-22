@@ -55,8 +55,11 @@ func NewGame(screenWidth, screenHeight int, cardImages *cardImages, deck *cardPi
 		}
 		theGame.playerHandSprites = append(theGame.playerHandSprites, sprite)
 	}
-	for _, dealerCard := range theGame.dealerHand.cards {
+	for i, dealerCard := range theGame.dealerHand.cards {
 		cardImage := theGame.cardImages.getFaceUpImage(dealerCard.face, dealerCard.suit)
+		if i == 0 {
+			cardImage = theGame.cardImages.getFaceDownImage()
+		}
 		sprite := &cardSprite{
 			image: cardImage,
 		}
@@ -92,8 +95,11 @@ func (g *game) Update() error {
 				}
 				g.playerHandSprites = append(g.playerHandSprites, sprite)
 			}
-			for _, dealerCard := range g.dealerHand.cards {
+			for i, dealerCard := range g.dealerHand.cards {
 				cardImage := g.cardImages.getFaceUpImage(dealerCard.face, dealerCard.suit)
+				if i == 0 {
+					cardImage = g.cardImages.getFaceDownImage()
+				}
 				sprite := &cardSprite{
 					image: cardImage,
 				}
@@ -108,7 +114,7 @@ func (g *game) Update() error {
 	}
 
 	if g.hold {
-		if g.dealerHand.sum() < 17 {
+		for g.dealerHand.sum() < 17 {
 			drawCard := g.deck.draw()
 			g.dealerHand.add(drawCard)
 			cardImage := g.cardImages.getFaceUpImage(drawCard.face, drawCard.suit)
@@ -156,6 +162,8 @@ func (g *game) Draw(screen *ebiten.Image) {
 		if g.hold {
 			if dealerSum > 21 || playerSum > dealerSum {
 				winState = "won"
+			} else if playerSum == dealerSum {
+				winState = "tied"
 			}
 			ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Dealer: %d\nPlayer: %d You %s! press 'N' for a new deal", dealerSum, playerSum, winState), 0, debugY)
 		} else {
@@ -165,6 +173,18 @@ func (g *game) Draw(screen *ebiten.Image) {
 
 	x := 0.0
 	y := 0.0
+
+	if g.hold {
+		g.dealerHandSprites = make([]*cardSprite, 0)
+		for _, dealerCard := range g.dealerHand.cards {
+			cardImage := g.cardImages.getFaceUpImage(dealerCard.face, dealerCard.suit)
+			sprite := &cardSprite{
+				image: cardImage,
+			}
+			g.dealerHandSprites = append(g.dealerHandSprites, sprite)
+		}
+	}
+
 	for _, c := range g.dealerHandSprites {
 		opts := &ebiten.DrawImageOptions{}
 		opts.GeoM.Translate(x, y)

@@ -110,6 +110,12 @@ func (c *cardPile) shuffle() {
 }
 
 func (c *cardPile) draw() card {
+	// TODO: shuffle a new deck somewhere else?
+	if len(c.cards) == 0 {
+		c = generateDeck()
+		c.shuffle()
+	}
+
 	drawCard := c.cards[0]
 	c.cards = c.cards[1:]
 	return drawCard
