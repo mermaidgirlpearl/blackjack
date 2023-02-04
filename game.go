@@ -28,6 +28,7 @@ type game struct {
 	playerHand *cardPile
 	dealerHand *cardPile
 	hold       bool
+	wallet     int
 }
 
 func NewGame(screenWidth, screenHeight int, cardImages *cardImages, deck *cardPile) *game {
@@ -40,6 +41,7 @@ func NewGame(screenWidth, screenHeight int, cardImages *cardImages, deck *cardPi
 		deck:         deck,
 		playerHand:   newCardPile(),
 		dealerHand:   newCardPile(),
+		wallet:       1000,
 	}
 
 	// draw 2 for each dealer and player
@@ -111,9 +113,6 @@ func (g *game) Update() error {
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyH) {
 		g.hold = true
-	}
-
-	if g.hold {
 		for g.dealerHand.sum() < 17 {
 			drawCard := g.deck.draw()
 			g.dealerHand.add(drawCard)
@@ -122,6 +121,17 @@ func (g *game) Update() error {
 				image: cardImage,
 			}
 			g.dealerHandSprites = append(g.dealerHandSprites, sprite)
+		}
+
+		// handle wallet changes here
+		dealerSum := g.dealerHand.sum()
+		playerSum := g.playerHand.sum()
+		if dealerSum > 21 || playerSum > dealerSum {
+			g.wallet += 10
+		} else if playerSum == dealerSum {
+
+		} else {
+			g.wallet -= 10
 		}
 	}
 
@@ -167,9 +177,13 @@ func (g *game) Draw(screen *ebiten.Image) {
 			}
 			ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Dealer: %d\nPlayer: %d You %s! press 'N' for a new deal", dealerSum, playerSum, winState), 0, debugY)
 		} else {
-			ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Dealer: %d\nPlayer: %d press 'D' to Draw, 'H' to Hold", dealerSum, playerSum), 0, debugY)
+			ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Dealer: ?\nPlayer: %d press 'D' to Draw, 'H' to Hold", playerSum), 0, debugY)
 		}
 	}
+
+	debugY += cardHeight
+	walletMessage := fmt.Sprintf("wallet: %d", g.wallet)
+	ebitenutil.DebugPrintAt(screen, walletMessage, 0, debugY)
 
 	x := 0.0
 	y := 0.0
